@@ -1,0 +1,76 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../css/spectre.min.css">
+  </head>
+  <body>
+    <div class="form-group">
+      <label class="form-label" for="gh_repo1_owner">GitHub repo 1 owner/name/workflow</label>
+      <input class="form-input" type="text" id="gh_repo1_owner" placeholder="Repo Owner">
+      <input class="form-input" type="text" id="gh_repo1_name" placeholder="Repo Name">
+      <input class="form-input" type="text" id="gh_repo1_workflow" placeholder="Workflow">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="gh_repo2_owner">GitHub repo 2 owner/name/workflow</label>
+      <input class="form-input" type="text" id="gh_repo2_owner" placeholder="Repo Owner">
+      <input class="form-input" type="text" id="gh_repo2_name" placeholder="Repo Name">
+      <input class="form-input" type="text" id="gh_repo2_workflow" placeholder="Workflow">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="gh_repo3_owner">GitHub repo 3 owner/name/workflow</label>
+      <input class="form-input" type="text" id="gh_repo3_owner" placeholder="Repo Owner">
+      <input class="form-input" type="text" id="gh_repo3_name" placeholder="Repo Name">
+      <input class="form-input" type="text" id="gh_repo3_workflow" placeholder="Workflow">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="gh_repo4_owner">GitHub repo 4 owner/name/workflow</label>
+      <input class="form-input" type="text" id="gh_repo4_owner" placeholder="Repo Owner">
+      <input class="form-input" type="text" id="gh_repo4_name" placeholder="Repo Name">
+      <input class="form-input" type="text" id="gh_repo4_workflow" placeholder="Workflow">
+    </div>
+
+    <p><button id="save" class="btn btn-primary">Save Details</button></p>
+    <p>Note: WiFi details also need to have been set up first using the Wifi app</p>
+
+    <script src="../../core/lib/interface.js"></script>
+
+    <script>
+      document.getElementById("save").addEventListener("click", function() {
+        console.log("Sending...");
+        var json = { repos : [] };
+        for (var i=0;i<4;i++) {
+          let r = {
+            owner:document.getElementById(`gh_repo${i+1}_owner`).value,
+            name:document.getElementById(`gh_repo${i+1}_name`).value,
+            workflow:document.getElementById(`gh_repo${i+1}_workflow`).value
+          };
+          if (r.owner&&r.name&&r.workflow)
+            json.repos.push(r);
+        }
+        Util.writeStorage("github.json", JSON.stringify(json));
+      });
+
+      Util.showModal("Loading...");
+      // Called when we know what device we're using
+      function onInit(device) {
+        Util.readStorageJSON("github.json",function(json) {
+          console.log("Got GitHub:", json);
+          if (json==undefined) json={};
+          if (json.repos===undefined)
+            json.repos = [
+              {owner:"espruino", name:"Espruino", workflow:"build.yml"},
+              {owner:"espruino", name:"BangleApps", workflow:"nodejs.yml" }
+            ];
+          for (var i=0;i<4;i++) {
+            let r = json.repos[i];
+            if (r) {
+              document.getElementById(`gh_repo${i+1}_owner`).value = r.owner||"";
+              document.getElementById(`gh_repo${i+1}_name`).value = r.name||``;
+              document.getElementById(`gh_repo${i+1}_workflow`).value = r.workflow||``;
+            }
+          }
+          Util.hideModal();
+        });
+      }
+    </script>
+  </body>
+</html>

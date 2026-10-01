@@ -1,0 +1,13 @@
+{
+  "id": "github",
+  "name": "GitHub Status",
+  "icon": "icon.png",
+  "version": "0.01",
+  "description": "A dashboard showing your GitHub projects' status. Install, then click the disk icon to configure repositories.",
+  "screenshots": [{"url":"screenshot.png"}],
+  "interface": "interface.html",
+  "tags": "",
+  "storage": [
+    { "name": ".bootcde", "url": "app.js" }
+  ]
+}

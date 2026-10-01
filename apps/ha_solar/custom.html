@@ -40,7 +40,7 @@
       // Called when we know what device we're using
       function onInit(device) {
         Util.readStorageJSON("ha.json",function(json) {
-          console.log("Got WiFi:", json);
+          console.log("Got info:", json);
           if (json==undefined) json={};
           document.getElementById("ha_auth_key").value = json.auth_key||"";
           document.getElementById("ha_template").value = json.template||`{
