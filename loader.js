@@ -54,3 +54,17 @@ if (window.location.search) {
     Const.CONNECTION_DEVICE = "Bluetooth"; // force Bluetooth because we know (don't look it up)
   }
 }
+
+// This was in pwa.js but we're not enabling PWA for this at the moment
+/**
+ * Warn the page must be served over HTTPS
+ * The `beforeinstallprompt` event won't fire if the page is served over HTTP.
+ * Installability requires a service worker with a fetch event handler, and
+ * if the page isn't served over HTTPS, the service worker won't load.
+ */
+if (window.location.protocol === 'http:' && window.location.hostname!="localhost") {
+  const requireHTTPS = document.getElementById('requireHTTPS');
+  const link = requireHTTPS.querySelector('a');
+  link.href = window.location.href.replace('http://', 'https://');
+  requireHTTPS.classList.remove('hidden');
+}
