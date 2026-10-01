@@ -1,0 +1,12 @@
+{
+  "id": "bitcoin",
+  "name": "Bitcoin price",
+  "icon": "icon.png",
+  "version": "0.01",
+  "description": "Show Current and historical bitcoin price from coingecko.com, once per hour",
+  "screenshots": [{"url":"screenshot.png"}],
+  "tags": "",
+  "storage": [
+    { "name": ".bootcde", "url": "app.js" }
+  ]
+}

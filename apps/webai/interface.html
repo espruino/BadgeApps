@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../css/spectre.min.css">
+  </head>
+  <body>
+    <h5>Saved Connections</h5>
+    <div id="connections">...
+    </div>
+
+    <script src="../../core/lib/interface.js"></script>
+    <script>
+
+      function escapeHTML(str) {
+        return str.replace(/[&<>"']/g, match => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        })[match]);
+      }
+
+      Util.showModal("Loading...");
+      // Called when we know what device we're using
+      function onInit(device) {
+        Util.readStorageJSON("connections.json",function(json) {
+          console.log("Got Connections:", json);
+          if (json==undefined) json={};
+          let html = `<p>No Connections Found</p>`;
+          if (json!==undefined) html = `<table style="width:100%">
+            <tr><th>Name</th><th>Company</th><th>URL</th><th>email</th></tr>
+            ${json.map(c=>`<tr><td>${escapeHTML(c.name)}</td><td>${escapeHTML(c.company)}</td><td>${escapeHTML(c.socialURL)}</td><td>${escapeHTML(c.email)}</td></tr>`).join("\n")}
+          </table>`;
+          document.getElementById("connections").innerHTML = html;
+          Util.hideModal();
+        });
+      }
+    </script>
+  </body>
+</html>

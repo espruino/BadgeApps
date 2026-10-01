@@ -1,0 +1,14 @@
+{
+  "id": "ha_solar",
+  "name": "Home Assistant Solar Dashboard",
+  "icon": "icon.png",
+  "version": "0.01",
+  "description": "A dashboard for Solar Power in Home Assistant. Shows battery level, solar generation, load, and grid power",
+  "screenshots": [{"url":"screenshot.png"}],
+  "custom": "custom.html",
+  "customConnect": true,
+  "tags": "",
+  "storage": [
+    { "name": ".bootcde", "url": "app.js" }
+  ]
+}

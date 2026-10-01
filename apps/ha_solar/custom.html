@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../css/spectre.min.css">
+  </head>
+  <body>
+    <div class="form-group">
+      <label class="form-label" for="ha_auth_key">Home Assistant <a href="https://developers.home-assistant.io/docs/api/rest/" target="_blank">Access Token</a></label>
+      <input class="form-input" type="text" id="ha_auth_key" placeholder="Name">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="ha_template">Home Assistant JSON <a href="https://www.home-assistant.io/docs/templating/" target="_blank">Template</a> (update with your Home Assistant Sensor names)</label>
+      <textarea class="form-input" type="text" id="ha_template">{
+  "battery": "{{ states('sensor.battery') }}",
+  "pv": "{{ states('sensor.pv') }}",
+  "load": "{{ states('sensor.load') }}",
+  "grid": "{{ states('sensor.grid') }}",
+  "soc": "{{ states('sensor.battery_soc') }}"
+}</textarea>
+
+    </div>
+    <p><button id="save" class="btn btn-primary">Save Details</button></p>
+    <p>Note: WiFi details also need to have been set up first using the Wifi app</p>
+
+    <script src="../../core/lib/customize.js"></script>
+
+    <script>
+      document.getElementById("save").addEventListener("click", function() {
+        console.log("Sending...");
+        sendCustomizedApp({
+          storage:[
+            {name:"ha.json", content:JSON.stringify({
+              auth_key : document.getElementById("ha_auth_key").value,
+              template :document.getElementById("ha_template").value
+          })},
+          ]
+        });
+      });
+
+      Util.showModal("Loading...");
+      // Called when we know what device we're using
+      function onInit(device) {
+        Util.readStorageJSON("ha.json",function(json) {
+          console.log("Got WiFi:", json);
+          if (json==undefined) json={};
+          document.getElementById("ha_auth_key").value = json.auth_key||"";
+          document.getElementById("ha_template").value = json.template||`{
+  "battery": "{{ states('sensor.battery') }}",
+  "pv": "{{ states('sensor.pv') }}",
+  "load": "{{ states('sensor.load') }}",
+  "grid": "{{ states('sensor.grid') }}",
+  "soc": "{{ states('sensor.battery_soc') }}"
+ }`;
+          Util.hideModal();
+        });
+      }
+    </script>
+  </body>
+</html>

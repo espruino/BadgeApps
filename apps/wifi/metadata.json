@@ -1,0 +1,12 @@
+{
+  "id": "wifi",
+  "name": "WiFi Credentials",
+  "icon": "icon.png",
+  "version": "0.01",
+  "description": "Set WiFi Credentials",
+  "custom": "custom.html",
+  "customConnect": true,
+  "sortorder" : -2,
+  "tags": "",
+  "storage": [ ]
+}

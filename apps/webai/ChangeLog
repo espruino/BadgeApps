@@ -1,0 +1,6 @@
+0.01: New App!
+0.02: Retrieve connection info is now done straight to storage (allows >100 connections)
+0.03: Request Connection QR code with serial number, to allow connections to be retrieved
+0.04: Protect against failed epaper image GET requests
+      Add README, and improve LED colours for status
+      Allow badges slightly further away when pairing

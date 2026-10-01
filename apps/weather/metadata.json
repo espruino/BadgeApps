@@ -1,0 +1,12 @@
+{
+  "id": "weather",
+  "name": "Bay Area Weather",
+  "icon": "icon.png",
+  "version": "0.01",
+  "description": "Show Weather info from Open-Meteo",
+  "screenshots": [{"url":"screenshot.png"}],
+  "tags": "",
+  "storage": [
+    { "name": ".bootcde", "url": "app.js" }
+  ]
+}

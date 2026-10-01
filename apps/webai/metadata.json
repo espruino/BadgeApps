@@ -1,0 +1,15 @@
+{
+  "id": "webai",
+  "name": "WebAI Badge Firmware",
+  "icon": "icon.png",
+  "version": "0.04",
+  "sortorder" : -1,
+  "interface" : "interface.html",
+  "description": "WebAI 2026 Conference badge firmware - this will only work while the server is active",
+  "readme": "README.md",
+  "screenshots": [{"url":"screenshot.png"}],
+  "tags": "",
+  "storage": [
+    { "name": ".bootcde", "url": "app.js" }
+  ]
+}

@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../css/spectre.min.css">
+  </head>
+  <body>
+    <div class="form-group">
+      <label class="form-label" for="wifi_ssid">WiFi SSID</label>
+      <input class="form-input" type="text" id="wifi_ssid" placeholder="Name">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="wifi_pass">WiFi Password</label>
+      <input class="form-input" type="text" id="wifi_pass" placeholder="Password">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="wifi_ssid">Backup WiFi SSID</label>
+      <input class="form-input" type="text" id="backup_wifi_ssid" placeholder="Name">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="wifi_pass">Backup WiFi Password</label>
+      <input class="form-input" type="text" id="backup_wifi_pass" placeholder="Password">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="badge_url">Badge Server URL</label>
+      <input class="form-input" type="text" id="badge_url" placeholder="Password">
+    </div>
+    <p><button id="save" class="btn btn-primary">Save Details</button></p>
+
+    <script src="../../core/lib/customize.js"></script>
+
+    <script>
+      document.getElementById("save").addEventListener("click", function() {
+        console.log("Sending...");
+        sendCustomizedApp({
+          storage:[
+            {name:"wifi.json", content:JSON.stringify({
+              ssid : document.getElementById("wifi_ssid").value,
+              options : { password : document.getElementById("wifi_pass").value },
+              backup_ssid : document.getElementById("backup_wifi_ssid").value,
+              backup_options : { password : document.getElementById("backup_wifi_pass").value },
+              badgeURL : document.getElementById("badge_url").value
+          })},
+          ]
+        });
+      });
+
+      Util.showModal("Loading...");
+      // Called when we know what device we're using
+      function onInit(device) {
+        Util.readStorageJSON("wifi.json",function(json) {
+          console.log("Got WiFi:", json);
+          if (json==undefined) json={};
+          document.getElementById("wifi_ssid").value = json.ssid||"";
+          document.getElementById("wifi_pass").value = (json.options||{}).password || "";
+          document.getElementById("backup_wifi_ssid").value = json.backup_ssid||"";
+          document.getElementById("backup_wifi_pass").value = (json.backup_options||{}).password || "";
+          document.getElementById("badge_url").value = json.badgeURL||"";
+          Util.hideModal();
+        });
+      }
+    </script>
+  </body>
+</html>
