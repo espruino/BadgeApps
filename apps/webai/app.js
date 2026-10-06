@@ -64,37 +64,40 @@ function onConnected() {
   });
 }
 
-function httpGet(url) {
+function httpGet(url, retries) {
   log("GET ",url);
+  retries=0|retries;
   return new Promise((resolve,reject) => {
     var timeout = setTimeout(function() {
       reject("HTTP Timeout");
-    }, 30000);
-    try {
-      http.get(url, function(res) {
-        let d="";
-        res.on('data', function(data) { d += data; });
-        res.on('close', function() {
-          clearTimeout(timeout);
-          log("GET success");
-          resolve(d);
-        });
+    }, 10000);
+    http.get(url, function(res) {
+      let d="";
+      res.on('data', function(data) { d += data; });
+      res.on('close', function() {
+        clearTimeout(timeout);
+        log("GET success");
+        resolve(d);
       });
-    } catch (e) {
-      log(e);
-      Badge.showError(e).then(() => {
+    });
+  }).catch(e => {
+    log(e);
+    if (++retries<3) {
+      log(`Retry ${retries}...`);
+      return new Promise(r=>setTimeout(r,1000)).then(() => httpGet(url, retries));
+    } else return Badge.showError(e).then(() => {
         Badge.sleep();
       });
-    }
   });
 }
 
-function httpGetImage(url, fn) {
+function httpGetImage(url, fn, retries) {
   log("GET image ",url);
+  retries=0|retries;
   return new Promise((resolve,reject) => {
     var timeout = setTimeout(function() {
       reject("HTTP Timeout");
-    }, 30000);
+    }, 15000);
     http.get(url, function(res) {
       let offs = 0, len = 800*480*2/8;
       res.on('data', function(data) {
@@ -108,32 +111,40 @@ function httpGetImage(url, fn) {
       res.on('close', function() {
         clearTimeout(timeout);
         if (offs!=96000) {
-          require("Storage").erase(fn); // ensure we don't keep any partial files
           return reject(`Truncated image (${offs}b vs 96k)`);
         }
         log("GET success");
-        //Badge.showImageFile(fn)
         resolve(fn);
       });
     });
+  }).catch(e => {
+    require("Storage").erase(fn); // ensure we don't keep any partial files
+    log(e);
+    if (++retries<3) {
+      log(`Retry ${retries}...`);
+      return new Promise(r=>setTimeout(r,1000)).then(() => httpGetImage(url, fn, retries));
+    } else return Badge.showError(e).then(() => {
+        Badge.sleep();
+      });
   });
 }
 
-function httpPost(post_url, payload, saveToFile) {
-  log("POST ",post_url);
-  var options = Object.assign(url.parse(post_url), {
-    method: 'POST',
-    headers: {
-      "Content-Length" : payload.length,
-      "Content-Type" : "application/json"
-    }
-  });
+function httpPost(post_url, payload, saveToFile, retries) {
+  log("POST ", post_url);
+  retries=0|retries;
   return new Promise((resolve,reject) => {
+    var options = Object.assign(url.parse(post_url), {
+      method: 'POST',
+      headers: {
+        "Content-Length" : payload.length,
+        "Content-Type" : "application/json"
+      }
+    });
     var timeout = setTimeout(function() {
       reject("HTTP Timeout");
     }, 30000);
     var req = require("http").request(options, function(res) {
-      console.log("POST open",res);
+      console.log("POST opened"/*,res*/);
       date = new Date(res.headers.Date);
       var dataLen = 0|res.headers["Content-Length"];
       var dataOffs = 0, data = "";
@@ -149,6 +160,14 @@ function httpPost(post_url, payload, saveToFile) {
       });
     });
     req.end(payload);
+  }).catch(e => {
+    log(e);
+    if (++retries<3) {
+      log(`Retry ${retries}...`);
+      return new Promise(r=>setTimeout(r,1000)).then(() => httpPost(post_url, payload, saveToFile, retries));
+    } else return Badge.showError(e).then(() => {
+        Badge.sleep();
+      });
   });
 }
 

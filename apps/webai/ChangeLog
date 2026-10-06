@@ -4,3 +4,4 @@
 0.04: Protect against failed epaper image GET requests
       Add README, and improve LED colours for status
       Allow badges slightly further away when pairing
+0.05: Add automatic retries for HTTP GET/POST

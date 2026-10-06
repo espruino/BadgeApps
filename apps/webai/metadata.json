@@ -2,7 +2,7 @@
   "id": "webai",
   "name": "WebAI Badge Firmware",
   "icon": "icon.png",
-  "version": "0.04",
+  "version": "0.05",
   "sortorder" : -1,
   "interface" : "interface.html",
   "description": "WebAI 2026 Conference badge firmware - this will only work while the server is active",
