@@ -188,6 +188,20 @@ function addUserInfo(deviceAddress) {
   return 1;
 }
 
+function setConnectableMode() {
+  console.log("Connectable mode");
+  Badge.setLEDs("#007");
+  return Badge.showImageFile("connect.epaper").then(() => {
+    require("Storage").write("showing", "connect");
+    setWatch(function() { // next button press - turn off
+      console.log("BTN2 pressed again");
+      NRF.sleep();
+      Badge.setLEDs("#0f0600");
+      showBadge({noLEDs:true}).then(() => Badge.sleep());
+    }, BTN2, {edge:"rising"});
+  });
+}
+
 // Scan for other badges in range. Doesn't return (goes to sleep eventually)
 Badge.scan = function() {
   const SCAN_TIMEOUT = 4000;
@@ -209,15 +223,7 @@ Badge.scan = function() {
     clearInterval(animInt);
     if (BTN2.read()) {
       // button 2 still held -> connectable mode! Stay awake, show connectable page
-      Badge.setLEDs("#007");
-      return Badge.showImageFile("connect.epaper").then(() => {
-        require("Storage").write("showing", "connect");
-        setWatch(function() { // next button press - turn off
-          NRF.sleep();
-          Badge.setLEDs("#001");
-          showBadge({noLEDs:true}).then(() => Badge.sleep());
-        }, BTN2, {edge:"rising"});
-      });
+      return setConnectableMode();
     }
     NRF.sleep();
     devices = devices.filter(d => d.rssi > -85 &&
@@ -384,34 +390,50 @@ function startup() {
          log("Sleep after 10s");
          Badge.setLEDs("#111");
          let arr = new Uint24Array(Badge.led_rgb.buffer);
-         let count = 0;
+         let count = 0, brightness = 16, btn2Count = 0;
          let anim = setInterval(function() {
-          arr[count] = 0;
-          arr[9-count] = 0;
+          if (BTN2.read() && !BTN1.read()) { // if BTN2 held for a bit, center connectable mode
+            btn2Count++;
+            if (btn2Count>8) {
+              clearInterval(anim);
+              return setConnectableMode();
+            }
+          } else btn2Count=0;
+          brightness --;
+          arr[count] = brightness|(brightness<<8)|(brightness<<16);
+          arr[9-count] = brightness|(brightness<<8)|(brightness<<16);
+          if (brightness<=0) {
+            brightness=16;
+            count++;
+          }
           Badge.setLEDArray();
-          if (count>3) {
+          if (count>4) {
+            Badge.setLEDs("#fff");
             clearInterval(anim);
-            if (BTN1.read() && BTN2.read()) factoryReset();
-            Badge.sleep();
-          } else count++;
-         }, 2000);
+            if (BTN1.read() && BTN2.read()) {
+              console.log("Factory Reset");
+              Badge.setLEDs("#f0f");
+              setTimeout(function() {
+                if (require("Storage").read("pair.epaper")!==undefined) { // if we have pairing, show it
+                  Badge.showImageFile("pair.epaper").then(() => {
+                    require("Storage").write("showing", "pair");
+                    setTimeout(load,100);
+                    factoryReset();
+                  });
+                } else {
+                  setTimeout(load,100);
+                  factoryReset();
+                }
+              }, 1000);
+            } else
+              Badge.sleep();
+          }
+         }, 125);
        }
     }
   }
 }
 
-// backup for old firmware (sent to Jason)
-if (!Badge.showImageFileRendering)
-Badge.showImageFileRendering = function(filename, height, gfxCallback) {
-  let img = require("Storage").read(filename);
-  if (!img) throw new Error(`File "${filename}" not found`);
-  let n=0;
-  return Badge.showRendering(function(g) {
-    (new Uint8Array(g.buffer)).set(img.substr(n*200));
-    if (n==0) gfxCallback(g);
-    n+=48;
-  });
-};
 
 /// Dump all the business cards that were scanned
 function dumpScans() {
@@ -423,9 +445,10 @@ function dumpScans() {
   }
 }
 
-/// Erase everything apart from program code
+/// Erase everything apart from program code and pairing epaper screens
 function factoryReset() {
-  require("Storage").list().filter(d=>d!=".bootcde").forEach(f=>require("Storage").erase(f));
+  require("Storage").list().filter(d=>!([".bootcde","wifi.json","pair.epaper","connect.epaper","showing"].includes(d))).forEach(f=>require("Storage").erase(f));
+  require("Storage").compact();
 }
 /*
 Badge.sleep = function() {

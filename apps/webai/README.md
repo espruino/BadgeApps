@@ -37,14 +37,17 @@ Now the badge is set up. At this point:
 | White | On (waiting and connectable for ~10 seconds) |
 | Off | Ready |
 
-* Pressing the side button will swap between showing the Programme + Badge:
+* Holding down the `SHARE` button with white LEDs lit this time will enter **Connectable mode** where the badge stays connectable.
+* Holding down both `SHARE` and the side button when white LEDs are lit, until all white LEDs have gone out *will make all LEDs purple and will reset the badge*. At next startup, the badge will re-download and display your badge screen.
+
+* Pressing the side button when no LEDs are lit will swap between showing the Programme + Badge:
 
 | LED Color | State |
 |-----------|-------|
 | Orange | Updating display |
 | Off | Ready |
 
-* Pressing the `SHARE` button on the back momentarily will show an animating blue LED pattern. Your badge is now scanning for other badges nearby that have their button pressed. Holding the `SHARE` button will enter `Connectable mode` (see below)
+* Pressing the `SHARE` button on the back momentarily when no LEDs are lit will show an animating blue LED pattern. Your badge is now scanning for other badges nearby that have their button pressed. Holding the `SHARE` button will enter `Connectable mode` (see below)
 
 | LED Color | State |
 |-----------|-------|
@@ -66,7 +69,7 @@ After scanning, if a new badge is found the ePaper will update showing your new 
 Connectable mode
 ----------------
 
-If you hold the `SHARE` button the badge will enter Connectable mode where the LEDs light solid Blue. You can scan the QR code to connect to your Badge *or* you can use USB.
+If you hold the `SHARE` button the badge will enter **Connectable mode** where the LEDs light solid Blue. You can scan the QR code to connect to your Badge *or* you can use USB.
 
 To exit this mode, press a button again. If you have connected and modified the state of the badge, just turn it off and on again to restart.
 

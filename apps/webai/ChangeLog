@@ -5,3 +5,6 @@
       Add README, and improve LED colours for status
       Allow badges slightly further away when pairing
 0.05: Add automatic retries for HTTP GET/POST
+0.06: smoother white LED animation
+      holding down BTN2 at power on (white LEDs) enters connectable mode
+      holding down BTN1+BTN2 when all white LEDs disappear resets the badge, causing a reload of badge info over Wifi
