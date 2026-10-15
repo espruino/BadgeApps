@@ -447,7 +447,7 @@ function dumpScans() {
 
 /// Erase everything apart from program code and pairing epaper screens
 function factoryReset() {
-  require("Storage").list().filter(d=>!([".bootcde","wifi.json","pair.epaper","connect.epaper","showing"].includes(d))).forEach(f=>require("Storage").erase(f));
+  require("Storage").list().filter(d=>!([".bootcde","wifi.json","pair.epaper","connect.epaper","showing","app.info"].includes(d))).forEach(f=>require("Storage").erase(f));
   require("Storage").compact();
 }
 /*
