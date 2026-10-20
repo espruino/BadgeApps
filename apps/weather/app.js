@@ -1,7 +1,10 @@
 /* Get weather from api.open-meteo.com and output it */
-const LAT=37.7749, LON=-122.4194;
-// FIXME: could store this in JSON and have a customised forecast
-const URL=`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=weather_code,temperature_2m,relative_humidity_2m,wind_speed_10m&hourly=weather_code,temperature_2m,relative_humidity_2m,wind_speed_10m&forecast_days=1&temperature_unit=fahrenheit&timezone=auto`;
+let options = require("Storage").readJSON("weather.json",1)||{};
+if (options.lat===undefined) options.lat=37.7749;
+if (options.lng===undefined) options.lng=-122.4194;
+options.metric=!!options.metric; // bool
+
+const URL=`https://api.open-meteo.com/v1/forecast?latitude=${options.lat}&longitude=${options.lng}&current=weather_code,temperature_2m,relative_humidity_2m,wind_speed_10m&hourly=weather_code,temperature_2m,relative_humidity_2m,wind_speed_10m&forecast_days=1&temperature_unit=${options.metric?"celsius":"fahrenheit"}&timezone=auto`;
 
 var http = require("http");
 var log = print;
@@ -84,7 +87,7 @@ Badge.connectWiFi().then(function() {
     let img = getWeatherImage(json.current.weather_code);
     if (img!==null) g.drawImage(img,32,32,{scale:2});
     g.setFont("Vector:100").setFontAlign(0,0);
-    g.drawString(json.current.temperature_2m+"\xB0F", 360, 100);
+    g.drawString(json.current.temperature_2m+"\xB0"+(options.metric?"C":"F"), 360, 100);
     g.drawString(json.current.relative_humidity_2m+"%", 680, 100);
     g.setFont("6x8:2").setFontAlign(0,0);
     g.drawString("Temperature", 360, 150);

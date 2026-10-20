@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../css/spectre.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+      #map { height: 400px; width: 100%; border-radius: 8px; }
+      #coords { margin-top: 15px; font-size: 16px; }
+    </style>
+  </head>
+  <body>
+    <h3>Click the map to select coordinates</h3>
+    <div id="map"></div>
+    <div id="coords"><b>Latitude:</b> - | <b>Longitude:</b> -</div>
+    <div>Units: <select id="metric">
+      <option value="0">Fahrenheit</option>
+      <option value="1">Celsius</option>
+    </select></div>
+    </div>
+    <p><button id="save" class="btn btn-primary">Save Details</button></p>
+
+    <script src="../../core/lib/interface.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+      const map = L.map('map').setView([37.7749, -122.4194], 1);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+      let marker;
+      let options = {
+        lat : 37.7749,
+        lng : -122.4194,
+        metric : false
+      };
+      map.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        setCoords(lat, lng);
+      });
+      document.getElementById('metric').addEventListener('click', function(e) {
+        options.metric = document.getElementById('metric').value!="0";
+        console.log("Metric:", options.metric);
+      });
+      document.getElementById("save").addEventListener("click", function() {
+        Util.showModal("Saving...");
+        Util.writeStorage("weather.json", JSON.stringify(options), function() {
+          Util.hideModal();
+        });
+      });
+
+
+      function setCoords(lat, lng) {
+        options.lat = lat;
+        options.lng = lng;
+        document.getElementById('coords').innerHTML =
+          `<b>Latitude:</b> ${lat.toFixed(4)} | <b>Longitude:</b> ${lng.toFixed(4)}`;
+        if (marker) {
+          marker.setLatLng([lat,lng]);
+        } else {
+          marker = L.marker([lat,lng]).addTo(map);
+        }
+      }
+      function setMetric(isMetric) {
+        options.metric = !!isMetric;
+        document.getElementById('metric').value = 0|isMetric;
+      }
+
+      Util.showModal("Loading...");
+      // Called when we know what device we're using
+      function onInit(device) {
+        Util.readStorageJSON("weather.json",function(json) {
+          Util.hideModal();
+          console.log("Got weather.json:", json);
+          if (json==undefined) json={};
+          if (json.lat!==undefined && json.lng!==undefined) {
+            setCoords(json.lat, json.lng);
+          }
+          if (json.metric!==undefined)
+            setMetric(json.metric);
+        });
+      }
+    </script>
+  </body>
+</html>

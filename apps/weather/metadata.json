@@ -1,9 +1,10 @@
 {
   "id": "weather",
-  "name": "Bay Area Weather",
+  "name": "Weather",
   "icon": "icon.png",
-  "version": "0.01",
-  "description": "Show Weather info from Open-Meteo",
+  "version": "0.02",
+  "description": "Show Weather info from Open-Meteo. Defaults to San Francisco, but can be changed by clicking the 'disk' icon when installed.",
+  "interface" : "interface.html",
   "screenshots": [{"url":"screenshot.png"}],
   "tags": "",
   "storage": [
