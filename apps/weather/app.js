@@ -3,7 +3,7 @@ let options = require("Storage").readJSON("weather.json",1)||{};
 if (options.lat===undefined) options.lat=37.7749;
 if (options.lng===undefined) options.lng=-122.4194;
 options.metric=!!options.metric; // bool
-
+const tempUnits = "\xB0"/*degree symbol*/ + (options.metric?"C":"F");
 const URL=`https://api.open-meteo.com/v1/forecast?latitude=${options.lat}&longitude=${options.lng}&current=weather_code,temperature_2m,relative_humidity_2m,wind_speed_10m&hourly=weather_code,temperature_2m,relative_humidity_2m,wind_speed_10m&forecast_days=1&temperature_unit=${options.metric?"celsius":"fahrenheit"}&timezone=auto`;
 
 var http = require("http");
@@ -87,7 +87,7 @@ Badge.connectWiFi().then(function() {
     let img = getWeatherImage(json.current.weather_code);
     if (img!==null) g.drawImage(img,32,32,{scale:2});
     g.setFont("Vector:100").setFontAlign(0,0);
-    g.drawString(json.current.temperature_2m+"\xB0"+(options.metric?"C":"F"), 360, 100);
+    g.drawString(json.current.temperature_2m+tempUnits, 360, 100);
     g.drawString(json.current.relative_humidity_2m+"%", 680, 100);
     g.setFont("6x8:2").setFontAlign(0,0);
     g.drawString("Temperature", 360, 150);
@@ -103,13 +103,13 @@ Badge.connectWiFi().then(function() {
       if (img!==null) g.drawImage(img,x-32,200);
       g.setFont("Vector:20").setFontAlign(0,0);
       g.drawString(str,x,290);
-      g.drawString(json.hourly.temperature_2m[hr]+"\xB0F",x,340);
+      g.drawString(json.hourly.temperature_2m[hr]+tempUnits,x,340);
       g.drawString(json.hourly.relative_humidity_2m[hr]+"%",x,390);
       g.drawString(Math.round(json.hourly.wind_speed_10m[hr]),x,440);
     }
   });
 }).then(() => {
-  ESP32.deepSleep(30*60*1000000); // wake in 30 mins
+  ESP32.deepSleep(30*60*1000000); // 30 mins
 }).catch(e=>{
   Badge.showError(e).then(() => {
     ESP32.deepSleep(5*60*1000000); // try again in 5 mins
