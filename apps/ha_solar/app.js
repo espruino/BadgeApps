@@ -92,8 +92,7 @@ function getStatus() {
 }
 
 Badge.connectWiFi().then(getStatus).then(() => {
-  // wake in 15 mins
-  ESP32.deepSleep(15*60*1000000);
+  ESP32.deepSleep(15*60*1000000); // wake in 15 mins
 }).catch(e=>{
   console.log("Error",e);
   Badge.showError(e).then(() => {

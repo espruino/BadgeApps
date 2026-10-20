@@ -21,11 +21,9 @@ Badge.getTemperature().then(e => Badge.showRendering(function(g) {
   g.drawString("Temperature", 250, 200);
   g.drawString("Humidity", 620, 200);
 })).then(function() {
-  // sleep 30 mins
-  ESP32.deepSleep(30*60*1000000);
+  ESP32.deepSleep(30*60*1000000); // wake in 30 mins
 }).catch(e=>{
   Badge.showError(e).then(() => {
-    // try again in 5 mins
-    ESP32.deepSleep(10*60*1000000);
+    ESP32.deepSleep(10*60*1000000); // try again in 5 mins
   });
 });

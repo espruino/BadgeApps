@@ -2,7 +2,7 @@
   "id": "github",
   "name": "GitHub Status",
   "icon": "icon.png",
-  "version": "0.01",
+  "version": "0.02",
   "description": "A dashboard showing your GitHub projects' status. Install, then click the disk icon to configure repositories.",
   "screenshots": [{"url":"screenshot.png"}],
   "interface": "interface.html",

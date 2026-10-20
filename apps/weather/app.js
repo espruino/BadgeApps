@@ -109,8 +109,7 @@ Badge.connectWiFi().then(function() {
     }
   });
 }).then(() => {
-  // wake in 1 hr
-  ESP32.deepSleep(60*60*1000000);
+  ESP32.deepSleep(30*60*1000000); // wake in 30 mins
 }).catch(e=>{
   Badge.showError(e).then(() => {
     ESP32.deepSleep(5*60*1000000); // try again in 5 mins

@@ -51,8 +51,7 @@ function httpShow(url) {
 
 Badge.connectWiFi().then(function() {
   httpShow("http://192.168.1.78:3004/img?raw=1").then(() => {
-    // wake in 1 hr
-    //ESP32.deepSleep(60*60*1000000);
+    ESP32.deepSleep(30*60*1000000); // wake in 30 mins
   }).catch(e=>{
     Badge.showError(e).then(() => {
       Badge.sleep();

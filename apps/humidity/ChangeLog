@@ -1,1 +1,2 @@
 0.01: New App!
+0.02: Fix update interval to be 30 min or under (ESP32 int rounding on earlier firmwares)
