@@ -13,7 +13,7 @@ Const.LOAD_APP_AFTER_UPLOAD = false; // already the default
   let username = "espruino";
   let githubMatch = window.location.href.match(/\/(\w+)\.github\.io/);
   if (githubMatch) username = githubMatch[1];
-  Const.APP_SOURCECODE_URL = `https://github.com/${username}/WebAIServer/tree/master/www/apps`;
+  Const.APP_SOURCECODE_URL = `https://github.com/${username}/BadgeApps/tree/master/apps`;
 })();
 
 function onFoundDeviceInfo(deviceId, deviceVersion) {
