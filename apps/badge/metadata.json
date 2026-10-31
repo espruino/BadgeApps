@@ -1,0 +1,12 @@
+{
+  "id": "badge",
+  "name": "Name Badge",
+  "icon": "icon.png",
+  "version": "0.01",
+  "description": "Display a simple badge image on your Badge. Press the back button to enter 'connectable' (blue) mode.",
+  "interface": "interface.html",
+  "tags": "",
+  "storage": [
+    { "name": ".bootcde", "url": "app.js" }
+  ]
+}

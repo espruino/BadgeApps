@@ -1,0 +1,170 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../css/spectre.min.css">
+    <style>
+      #canvas { position:absolute;top:0px;right:0px;width:240px;height:400px; border:1px solid black; }
+      .form-input { width:50%; }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="480" height="800"></canvas>
+    <div class="form-group">
+      <label class="form-label" for="b_name">Your Name</label>
+      <input class="form-input" type="text" id="b_name" placeholder="Your Name">
+      <label class="form-label" for="b_company">Company Name</label>
+      <input class="form-input" type="text" id="b_company" placeholder="Your Company">
+      <label class="form-label" for="b_image">Background Image (480x800)</label>
+      <input type="file" id="b_image" accept="image/*">
+      <label class="form-label" for="b_style">Style</label>
+      <select class="form-select" id="b_style">
+        <option value="0">Webcam and Text</option>
+        <option value="1">Text</option>
+        <option value="2">Background only</option>
+      </select>
+    </div>
+
+    <video id="webcam_video" style="display:none" autoplay playsinline muted></video>
+    <img id="background_image" style="display:none" src="background.png"/>
+
+    <p><button id="save" class="btn btn-primary">Save Image</button></p>
+
+    <script src="../../core/lib/interface.js"></script>
+    <script src="../../webtools/imageconverter.js"></script>
+
+    <script>
+      let webcamStream, isWebcamLive;
+      let animationFrameId;
+
+
+      function getWebcamVideo() {
+        return document.getElementById('webcam_video');
+      }
+      async function initWebcam(onStarted) {
+        const video = getWebcamVideo();
+        if (!video) return;
+        try {
+          webcamStream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
+            audio: false,
+          });
+          video.srcObject = webcamStream;
+          await video.play();
+          console.log('Webcam connected. Live preview active in avatar box.');
+        } catch (err) {
+          console.log(`Webcam notice: ${err.message || 'Camera access not granted'}`);
+        }
+      }
+
+      function renderCanvas() {
+        const name = document.getElementById(`b_name`).value;
+        const company = document.getElementById(`b_company`).value;
+        const style = 0|document.getElementById(`b_style`).value;
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const video = getWebcamVideo();
+        const background = document.getElementById("background_image");
+        canvas.width = 480;
+        canvas.height = 800;
+        let Y = 480;
+        ctx.drawImage(background, 0,0,480,800);
+        // draw text
+        if (style<2) {
+          ctx.fillStyle = 'rgba(255,255,255, 0.5)';
+          ctx.beginPath();
+          ctx.roundRect(20, Y, 440, 180, [20]);
+          ctx.fill();
+
+          ctx.fillStyle = '#000000';
+          ctx.font = 'bold 36px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(name, 240, Y+75);
+
+          ctx.fillStyle = '#000000';
+          ctx.font = 'bold 28px sans-serif';
+          ctx.fillText(company, 240, Y+120);
+        }
+        // draw webcam image
+        if (style<1) {
+          const vW = video.videoWidth || 640;
+          const vH = video.videoHeight || 480;
+          const crop = Math.min(vW, vH);
+          const sx = (vW - crop) / 2;
+          const sy = (vH - crop) / 2;
+          const AVATAR_X = 48, AVATAR_Y = 48, AVATAR_SIZE = 384, AVATAR_RADIUS = 30;
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(AVATAR_X, AVATAR_Y, AVATAR_SIZE, AVATAR_SIZE, AVATAR_RADIUS);
+          ctx.clip();
+          ctx.drawImage(video, sx, sy, crop, crop, AVATAR_X, AVATAR_Y, AVATAR_SIZE, AVATAR_SIZE);
+          ctx.restore();
+        }
+      }
+
+    function liveLoop() {
+      if (!isWebcamLive) return;
+      renderCanvas();
+      animationFrameId = requestAnimationFrame(liveLoop);
+    }
+
+    /**
+     * Starts continuous live rendering of webcam on badge canvas.
+     */
+    function startLivePreview() {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      isWebcamLive = true;
+      liveLoop();
+    }
+
+    /**
+     * Stops live preview loop.
+     */
+    function stopLivePreview() {
+      isWebcamLive = false;
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    }
+
+    document.getElementById("b_image").addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const objectURL = URL.createObjectURL(file);
+        document.getElementById("background_image").src = objectURL;
+      }
+    });
+
+    document.getElementById("save").addEventListener("click", function() {
+      console.log("Sending...");
+      const canvas = document.getElementById('canvas');
+      const rawImage = imageconverter.canvastoString(canvas, {
+        rotate: 1,
+        diffusion: 'atkinson',
+        mode: 'epaper4',
+        transparent: false,
+        output: 'raw',
+      });
+      // Wroye, and cut off 3-byte header
+      Util.writeStorage("badge.epaper", rawImage.substr(3), () => {
+        UART.write('Badge.showImageFile("badge.epaper")\n');
+      });
+    });
+
+    Util.showModal("Loading...");
+    // Called when we know what device we're using
+    function onInit(device) {
+      Util.readStorageJSON("id.json",function(json) {
+        console.log("Got id.json:", json);
+        if (json==undefined) json={};
+        document.getElementById(`b_name`).value = json.name||``;
+        document.getElementById(`b_company`).value = json.company||``;
+        renderCanvas();
+        Util.hideModal();
+      });
+    }
+    document.getElementById(`b_name`).addEventListener("change", renderCanvas);
+    document.getElementById(`b_company`).addEventListener("change", renderCanvas);
+    document.getElementById(`b_style`).addEventListener("change", renderCanvas);
+    initWebcam();
+    startLivePreview();
+  </script>
+  </body>
+</html>
