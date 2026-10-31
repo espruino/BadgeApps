@@ -4,7 +4,7 @@
   </head>
   <body>
     <h5>Saved Connections</h5>
-    <div id="connections">...
+    <div id="connections" style="overflow-x: scroll;overflow-y: scroll;">...
     </div>
 
     <script src="../../core/lib/interface.js"></script>
@@ -24,10 +24,10 @@
       // Called when we know what device we're using
       function onInit(device) {
         Util.readStorageJSON("connections.json",function(json) {
-          console.log("Got Connections:", json);
+          console.log("Got Connections:", JSON.stringify(json,null,2));
           if (json==undefined) json={};
           let html = `<p>No Connections Found</p>`;
-          if (json!==undefined) html = `<table style="width:100%">
+          if (json!==undefined) html = `<table style="width:100%;">
             <tr><th>Name</th><th>Company</th><th>URL</th><th>email</th></tr>
             ${json.map(c=>`<tr><td>${escapeHTML(c.name)}</td><td>${escapeHTML(c.company)}</td><td>${escapeHTML(c.socialURL)}</td><td>${escapeHTML(c.email)}</td></tr>`).join("\n")}
           </table>`;
