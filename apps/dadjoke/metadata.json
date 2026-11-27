@@ -3,7 +3,7 @@
   "name": "Dad Joke",
   "icon": "icon.png",
   "version": "0.01",
-  "description": "Display a random dad joke from icanhazdadjoke.com every 30 minutes. Press a button for a new joke, or hold one for 1.5s to stay awake (blue LEDs) for connecting.",
+  "description": "Display a random dad joke from icanhazdadjoke.com every 30 minutes, with the smiley in a new color each time. Press a button for a new joke, or hold one for 1.5s to stay awake (blue LEDs) for connecting.",
   "screenshots": [{"url":"screenshot.png"}],
   "tags": "",
   "storage": [
